@@ -3,6 +3,7 @@ package com.mrappbuilder.imageectraction
 
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.Manifest.permission.READ_MEDIA_IMAGES
+import android.annotation.SuppressLint
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -12,6 +13,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatImageView
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.lifecycle.lifecycleScope
 import com.drew.imaging.ImageMetadataReader
 import com.drew.metadata.exif.ExifIFD0Directory
@@ -25,12 +27,14 @@ import kotlinx.coroutines.launch
 class MainActivity : AppCompatActivity() {
     lateinit var button: AppCompatButton
     lateinit var imageView: AppCompatImageView
+    lateinit var text: AppCompatTextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         button=findViewById(R.id.btn_select)
         imageView=findViewById(R.id.img_select)
+        text=findViewById(R.id.text_data)
 
         button.setOnClickListener{
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -54,6 +58,7 @@ Toast.makeText(this,"Give permission",Toast.LENGTH_LONG).show()
     private fun launchNewPhotoPicker(){
         newPhotoPiker.launch("image/*")
     }
+    @SuppressLint("SetTextI18n")
     val newPhotoPiker=registerForActivityResult(ActivityResultContracts.GetContent()){ uri ->
         imageView.setImageURI(uri)
         lifecycleScope.launch (Dispatchers.Main){
@@ -80,7 +85,7 @@ Toast.makeText(this,"Give permission",Toast.LENGTH_LONG).show()
 
             }
             val (imageHeight,model,latitude,longitude)=result.await()
-
+            text.text = "imageHeight : $imageHeight \n  Model Name : $model \n  Latitude : $latitude \n Longitude : $longitude"
             Log.i("TAG", "imageHeight:  $imageHeight")
             Log.i("TAG", "model:  $model")
             Log.i("TAG", "latitude:  $latitude")
